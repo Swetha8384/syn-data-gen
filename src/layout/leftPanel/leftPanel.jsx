@@ -1,3 +1,4 @@
+import { UserContext } from "@/App";
 import CardWithForm from "@/components/schema/cardwithform";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,7 +12,6 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useContext, useState } from "react";
-import { UserContext } from "../Layout";
 
 function LeftPanel() {
   const [isOpenConfig, setIsOpenConfig] = useState(false);

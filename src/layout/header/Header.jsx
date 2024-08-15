@@ -1,9 +1,9 @@
+import { UserContext } from "@/App";
 import { useTheme } from "@/components/theme-provider";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 import { useContext } from "react";
 import fordLogo from "../../assets/ford.svg";
-import { UserContext } from "../Layout";
 
 function Header() {
   const { isEnableGenData } = useContext(UserContext);
