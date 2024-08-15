@@ -224,11 +224,11 @@ export default function DataTable() {
   const anyRowSelected = table.getSelectedRowModel().rows;
 
   return (
-    <div className="p-2 mx-auto overflow-x-auto rounded-md">
+    <div className="p-2 mx-auto overflow-x-auto rounded-md ">
       <div className="overflow-x-auto max-h-96">
         {" "}
         {/* Adjust max-h-96 as per your needs */}
-        <table className="min-w-full border border-gray-300">
+        <table className="min-w-full text-left border border-gray-300">
           {schemaData.length > 0 && (
             <thead>
               {table.getHeaderGroups().map((headerGroup) => (
