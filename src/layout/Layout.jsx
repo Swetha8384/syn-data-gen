@@ -1,9 +1,14 @@
 import Dashboard from "@/components/dashboard";
 import { useTheme } from "@/components/theme-provider";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
 import { createContext, useState } from "react";
-import { Route, Routes } from "react-router-dom";
 import Footer from "./footer/Footer";
 import Header from "./header/Header";
+import LeftPanel from "./leftPanel/leftPanel";
 export const UserContext = createContext();
 /**
  * layout component to generate our basic layout of our application
@@ -43,20 +48,22 @@ function Layout() {
 
         {/* Main Content Area */}
         <div className="flex w-full h-full">
-          {/* <Aside expanded={expanded} setExpanded={setExpanded} /> */}
-          <div className="flex flex-col w-3/4 h-full p-4 ml-[25%]">
-            <div className="w-full h-full">
-              <Routes>
-                <Route path="/" element={<Dashboard />} />
-                <Route
-                  path="/other"
-                  element={<div>Other Content</div>}
-                  schemaData={schemaData}
-                  setSchemaData={setSchemaData}
-                />
-              </Routes>
-            </div>
-          </div>
+          <ResizablePanelGroup
+            direction="horizontal"
+            className="max-w-full border rounded-lg"
+          >
+            <ResizablePanel defaultSize={25}>
+              <div className="flex items-start justify-start p-6 overflow-y-auto">
+                <LeftPanel />
+              </div>
+            </ResizablePanel>
+            <ResizableHandle />
+            <ResizablePanel defaultSize={75}>
+              <div className="flex h-[200px] items-center justify-center p-6">
+                <Dashboard />
+              </div>
+            </ResizablePanel>
+          </ResizablePanelGroup>
         </div>
 
         {/* Footer */}

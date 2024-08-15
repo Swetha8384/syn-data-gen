@@ -1,32 +1,24 @@
 import { useTheme } from "@/components/theme-provider";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Menu } from "lucide-react";
+import { useContext } from "react";
 import fordLogo from "../../assets/ford.svg";
+import { UserContext } from "../Layout";
 
 function Header() {
+  const { isEnableGenData } = useContext(UserContext);
   const { theme } = useTheme();
   return (
     <div className="w-full h-16 bg-gray-100 shadow-md">
       <div className="flex items-center justify-between h-full">
         {/* Left-aligned text */}
-        <div className="flex justify-start flex-1">
+        <div className="flex justify-start flex-1 ml-5">
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="outline">side</Button>
+              <Menu />
             </SheetTrigger>
-            <SheetContent>
-              <SheetHeader>
+            <SheetContent side="left">
+              {/* <SheetHeader>
                 <SheetTitle>Edit profile</SheetTitle>
                 <SheetDescription>
                   Make changes to your profile here. Click save when you're
@@ -59,19 +51,22 @@ function Header() {
                 <SheetClose asChild>
                   <Button type="submit">Save changes</Button>
                 </SheetClose>
-              </SheetFooter>
+              </SheetFooter> */}
             </SheetContent>
           </Sheet>
         </div>
 
         {/* Centered text */}
         <div className="flex justify-center flex-1">
-          <h1 className="text-xl font-semibold">Schema Generator</h1>
+          <h1 className="text-3xl">
+            {" "}
+            {!isEnableGenData ? "Schema Generator" : "Table Data Generator"}
+          </h1>
         </div>
 
         {/* Right-aligned logo */}
         <div className="flex justify-end flex-1">
-          <img src={fordLogo} alt="Logo" className="w-28 h-28" />
+          <img src={fordLogo} alt="Logo" className="w-24 h-24" />
         </div>
       </div>
     </div>
