@@ -2,8 +2,8 @@ import Dashboard from "@/components/dashboard";
 import { useTheme } from "@/components/theme-provider";
 import { createContext, useState } from "react";
 import { Route, Routes } from "react-router-dom";
-import Aside from "./aside/Aside";
 import Footer from "./footer/Footer";
+import Header from "./header/Header";
 export const UserContext = createContext();
 /**
  * layout component to generate our basic layout of our application
@@ -39,11 +39,11 @@ function Layout() {
     >
       <div className="flex flex-col w-full h-full transition-all">
         {/* Header */}
-        {/* <Header /> */}
+        <Header />
 
         {/* Main Content Area */}
         <div className="flex w-full h-full">
-          <Aside expanded={expanded} setExpanded={setExpanded} />
+          {/* <Aside expanded={expanded} setExpanded={setExpanded} /> */}
           <div className="flex flex-col w-3/4 h-full p-4 ml-[25%]">
             <div className="w-full h-full">
               <Routes>
