@@ -44,6 +44,7 @@ export default function DataTable() {
   };
 
   const handleClick = () => {
+    console.log("Generate Schema");
     setIsLoading(true);
 
     const apiCall = isEnableGenData ? GenerateDataAPI : GenerateSchemaAPI;
@@ -63,19 +64,21 @@ export default function DataTable() {
     });
   };
 
+  const Data = schemaData.map((schema) => {
+    return {
+      ColumnName: schema.name,
+      Type: schema.type,
+      Description: schema.description,
+    };
+  });
+
   const GenerateSchemaAPI = async () => {
+    console.log("GenerateSchemaAPI");
     let data = {
       prompt: prompt,
-      schema_responses: [
-        schemaData.map((schema) => {
-          return {
-            ColumnName: schema.name,
-            Type: schema.type,
-            Description: schema.description,
-          };
-        }),
-      ],
+      schema_responses: Data,
     };
+    console.log(data, "------------");
     return API.post
       .generateSchema(data)
       .then((response) => {
@@ -152,6 +155,7 @@ export default function DataTable() {
             onClick: () => console.log("Undo"),
           },
         });
+        setIsEnableGenData(false);
       })
       .catch((error) => {
         console.error(error);
@@ -221,56 +225,63 @@ export default function DataTable() {
 
   return (
     <div className="p-2 mx-auto overflow-x-auto rounded-md">
-      <table className="text-left border border-gray-300 ">
-        {schemaData.length > 0 && (
-          <thead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id} className="border-b border-gray-300">
-                {headerGroup.headers.map((header) => (
-                  <th
-                    key={header.id}
-                    className="text-md capitalize px-3.5 py-2 border-r border-gray-300"
-                    style={{ width: header.getSize() || "auto" }}
+      <div className="overflow-x-auto max-h-96">
+        {" "}
+        {/* Adjust max-h-96 as per your needs */}
+        <table className="min-w-full border border-gray-300">
+          {schemaData.length > 0 && (
+            <thead>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id} className="border-b border-gray-300">
+                  {headerGroup.headers.map((header) => (
+                    <th
+                      key={header.id}
+                      className="text-md capitalize px-3.5 py-2 border-r border-gray-300"
+                      style={{ width: header.getSize() || "auto" }}
+                    >
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                      {header.column.getCanResize() && (
+                        <div
+                          onMouseDown={header.getResizeHandler()}
+                          onTouchStart={header.getResizeHandler()}
+                          className={`resizer ${
+                            header.column.getIsResizing() ? "isResizing" : ""
+                          }`}
+                        />
+                      )}
+                    </th>
+                  ))}
+                </tr>
+              ))}
+            </thead>
+          )}
+
+          <tbody>
+            {table.getRowModel().rows.map((row) => (
+              <tr key={row.id} className="border-b border-gray-300">
+                {row.getVisibleCells().map((cell) => (
+                  <td
+                    key={cell.id}
+                    className="capitalize px-3.5 py-2 border-r border-gray-300"
                   >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                    {header.column.getCanResize() && (
-                      <div
-                        onMouseDown={header.getResizeHandler()}
-                        onTouchStart={header.getResizeHandler()}
-                        className={`resizer ${
-                          header.column.getIsResizing() ? "isResizing" : ""
-                        }`}
-                      />
-                    )}
-                  </th>
+                    <div className="max-w-xs truncate" title={cell.getValue()}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </div>
+                  </td>
                 ))}
               </tr>
             ))}
-          </thead>
-        )}
-
-        <tbody>
-          {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} className="border-b border-gray-300">
-              {row.getVisibleCells().map((cell) => (
-                <td
-                  key={cell.id}
-                  className="capitalize px-3.5 py-2 border-r border-gray-300"
-                >
-                  <div className="max-w-xs truncate" title={cell.getValue()}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </div>
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      </div>
 
       <div className="flex flex-row justify-end mt-2 space-x-3">
         {anyRowSelected.length > 0 && (
