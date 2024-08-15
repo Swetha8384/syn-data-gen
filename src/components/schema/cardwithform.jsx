@@ -16,8 +16,26 @@ import { Textarea } from "../ui/textarea";
 function CardWithForm() {
   const { schemaData, setSchemaData } = useContext(UserContext);
   const [name, setName] = useState("");
-  const [type, setType] = useState("");
+  const [type, setType] = useState("STRING");
   const [description, setDescription] = useState("");
+
+  const list = [
+    "STRING",
+    "BYTES",
+    "INTEGER",
+    "FLOAT",
+    "NUMERIC",
+    "BIGNUMERIC",
+    "BOOLEAN",
+    "TIMESTAMP",
+    "DATE",
+    "TIME",
+    "DATETIME",
+    "GEOGRAPHY",
+    "RECORD",
+    "JSON",
+    "RANGE",
+  ];
 
   const AddSchema = () => {
     if (name && type) {
@@ -32,7 +50,6 @@ function CardWithForm() {
 
       // Clear the input fields after adding
       setName("");
-      setType("");
       setDescription("");
     }
   };
@@ -43,35 +60,34 @@ function CardWithForm() {
         <CardContent>
           <form>
             <div className="flex flex-row items-start w-full gap-4">
-              <div className="flex flex-col space-y-1.5">
+              <div className="flex flex-col space-y-1.5 w-2/3">
                 <Label className="mb-2" htmlFor="name">
                   Name<span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="name"
-                  placeholder="Name of your project"
+                  placeholder="Name of your column"
                   value={name}
                   required
                   onChange={(e) => setName(e.target.value)}
                 />
               </div>
-              <div className="flex flex-col space-y-1.5">
+              <div className="flex flex-col space-y-1.5 w-1/3">
                 <Label className="mb-2" htmlFor="type">
                   Type<span className="text-red-500">*</span>
                 </Label>
-                <Select
-                  value={type}
-                  onValueChange={(value) => setType(value)}
-                  required
-                >
+                <Select value={type} onValueChange={(value) => setType(value)}>
                   <SelectTrigger id="type">
-                    <SelectValue placeholder="Select" />
+                    <SelectValue
+                      placeholder="STRING" // Placeholder displayed when no value is selected
+                    />
                   </SelectTrigger>
                   <SelectContent position="popper">
-                    <SelectItem value="String">String</SelectItem>
-                    <SelectItem value="Int">Int</SelectItem>
-                    <SelectItem value="Float">Float</SelectItem>
-                    <SelectItem value="Double">Double</SelectItem>
+                    {list.map((each) => (
+                      <SelectItem key={each} value={each}>
+                        {each}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
