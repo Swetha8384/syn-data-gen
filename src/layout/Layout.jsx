@@ -1,4 +1,3 @@
-import Dashboard from "@/components/dashboard";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -7,6 +6,7 @@ import {
 import Footer from "./footer/Footer";
 import Header from "./header/Header";
 import LeftPanel from "./leftPanel/leftPanel";
+import RightPanel from "./rightPanel/RightPanel";
 
 /**
  * layout component to generate our basic layout of our application
@@ -24,15 +24,25 @@ function Layout() {
           direction="horizontal"
           className="max-w-full border rounded-lg"
         >
-          <ResizablePanel defaultSize={25}>
-            <div className="flex items-start justify-start p-6 overflow-y-auto">
+          <ResizablePanel defaultSize={30}>
+            <div className="flex items-start justify-start p-4 max-h-[calc(70vh)] overflow-y-auto">
               <LeftPanel />
             </div>
           </ResizablePanel>
           <ResizableHandle />
-          <ResizablePanel defaultSize={75}>
+          <ResizablePanel defaultSize={70}>
             <div className="flex h-[200px] items-center justify-center p-6">
-              <Dashboard />
+              <RightPanel />
+
+              {/* <Routes>
+                <Route path="/" element={<Dashboard />} />
+                <Route
+                  path="/other"
+                  element={<div>Other Content</div>}
+                  schemaData={schemaData}
+                  setSchemaData={setSchemaData}
+                />
+              </Routes> */}
             </div>
           </ResizablePanel>
         </ResizablePanelGroup>

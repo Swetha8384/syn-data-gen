@@ -4,13 +4,14 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { Loader2, Trash } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import { toast } from "sonner";
 import API from "../../services/API";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
 import EditableCell from "./Editable";
+import DropdownCell from "./dropdowncell";
 
 export default function DataTable() {
   const {
@@ -28,6 +29,38 @@ export default function DataTable() {
   const [isDataLoaded, setIsDataLoaded] = useState(false);
   const [hasIncompleteFields, setHasIncompleteFields] = useState(false);
 
+  const columns = [
+    {
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      ),
+    },
+
+    {
+      accessorKey: "Sno",
+      header: "Sno",
+      cell: ({ row }) => <span>{row.original.Sno}</span>, // Use row.original.Sno for the value
+    },
+    { accessorKey: "name", header: "Name", cell: EditableCell },
+    { accessorKey: "type", header: "Type", cell: DropdownCell },
+    { accessorKey: "description", header: "Description", cell: EditableCell },
+  ];
+
   // Check for empty fields whenever schemaData changes
   useEffect(() => {
     const hasEmptyFields = schemaData.some(
@@ -42,6 +75,20 @@ export default function DataTable() {
     setSchemaData(updatedData);
   };
 
+  // Handle adding a new row
+  const handleAddRow = () => {
+    setSchemaData((prevData) => {
+      const newRow = {
+        Sno: prevData.length + 1, // Set Sno for the new row
+        name: "",
+        type: "",
+        description: "",
+      };
+      console.log(newRow);
+      console.log(...prevData, newRow);
+      return [...prevData, newRow];
+    });
+  };
   // Handle API calls based on the button clicked
   const handleClick = async () => {
     setIsLoading(true);
@@ -91,7 +138,7 @@ export default function DataTable() {
         description: item.Description,
       }));
       setSchemaData(transformedData);
-      toast("Schema Generated Successfully");
+      toast.success("Schema Generated Successfully");
     } catch (error) {
       console.error(error);
     }
@@ -140,58 +187,6 @@ export default function DataTable() {
     }
   };
 
-  // Dynamically generate columns based on schemaData keys
-  const dynamicColumns =
-    schemaData.length > 0
-      ? Object.keys(schemaData[0]).map((key) => ({
-          accessorKey: key,
-          header: key.charAt(0).toUpperCase() + key.slice(1),
-          cell: EditableCell,
-        }))
-      : [];
-
-  const columns = [
-    {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      ),
-    },
-    {
-      accessorKey: "Sno",
-      header: "Sno",
-      cell: (props) => <span>{props.row.index + 1}</span>,
-    },
-    ...dynamicColumns,
-    {
-      id: "actions",
-      header: "Actions",
-      cell: (props) => (
-        <Button
-          variant="outline"
-          onClick={() => handleDeleteRow(props.row.index)}
-          className="justify-center text-red-500"
-        >
-          <Trash className="w-4 h-4 opacity-50" />
-        </Button>
-      ),
-    },
-  ];
-
   const table = useReactTable({
     data: schemaData,
     columns,
@@ -205,17 +200,17 @@ export default function DataTable() {
 
   return (
     <div className="p-2 mx-auto overflow-x-auto rounded-md">
-      <div className="my-2 overflow-x-auto border max-h-96">
-        <table className="min-w-full text-left border border-gray-300">
-          {schemaData.length > 0 && (
-            <thead>
+      <div className="my-2 overflow-x-auto overflow-y-auto border">
+        <table className="w-full overflow-y-auto text-left border border-gray-300">
+          <thead>
+            <tr className="border-b border-gray-300">
               {table.getHeaderGroups().map((headerGroup) => (
-                <tr key={headerGroup.id} className="border-b border-gray-300">
+                <tr key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (
                     <th
                       key={header.id}
                       className="text-md capitalize px-3.5 py-2 border-r border-gray-300 sticky"
-                      style={{ width: header.getSize() || "auto" }}
+                      style={{ width: header.getSize() }}
                     >
                       {header.isPlaceholder
                         ? null
@@ -236,27 +231,38 @@ export default function DataTable() {
                   ))}
                 </tr>
               ))}
-            </thead>
-          )}
+            </tr>
+          </thead>
 
           <tbody>
-            {table.getRowModel().rows.map((row) => (
-              <tr key={row.id} className="border-b border-gray-300">
-                {row.getVisibleCells().map((cell) => (
-                  <td
-                    key={cell.id}
-                    className="capitalize px-3.5 py-2 border-r border-gray-300"
-                  >
-                    <div className="max-w-xs truncate" title={cell.getValue()}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </div>
-                  </td>
-                ))}
+            {schemaData.length === 0 ? (
+              <tr>
+                <td colSpan={columns.length} className="py-3 text-center">
+                  No Rows Added
+                </td>
               </tr>
-            ))}
+            ) : (
+              table.getRowModel().rows.map((row) => (
+                <tr key={row.id} className="border-b border-gray-300">
+                  {row.getVisibleCells().map((cell) => (
+                    <td
+                      key={cell.id}
+                      className="capitalize px-3.5 py-2 border-r border-gray-300"
+                    >
+                      <div
+                        className="max-w-xs truncate"
+                        title={cell.getValue()}
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </div>
+                    </td>
+                  ))}
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
@@ -300,6 +306,10 @@ export default function DataTable() {
             </Button>
           ))
         )}
+
+        {/* <Button onClick={handleAddRow} className="mb-4">
+          Add Row
+        </Button> */}
       </div>
     </div>
   );

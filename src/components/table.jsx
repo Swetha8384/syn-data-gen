@@ -29,7 +29,7 @@ function Table({ isLoading, setIsLoading }) {
     fetchData();
   }, []); // Empty dependency array means this runs once on mount.
   return (
-    <div>
+    <div className="flex w-auto">
       <DataTable data={data} columns={columns} />
     </div>
   );

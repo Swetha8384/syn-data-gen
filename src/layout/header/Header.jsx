@@ -58,10 +58,7 @@ function Header() {
 
         {/* Centered text */}
         <div className="flex justify-center flex-1">
-          <h1 className="text-3xl">
-            {" "}
-            {!isEnableGenData ? "Schema Generator" : "Table Data Generator"}
-          </h1>
+          <h1 className="text-3xl">Synthetic Data Generator</h1>
         </div>
 
         {/* Right-aligned logo */}
